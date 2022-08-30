@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { where } from 'sequelize/types';
 import { Setting } from 'src/entity/setting.entity';
 
 @Injectable()
@@ -12,8 +13,29 @@ export class SettingService {
     return this.settingRepository.findAll<Setting>();
   }
 
-  async create(Setting: Setting): Promise<Setting> {
-    return this.settingRepository.create({ Setting: Setting });
+  async create(setting: Setting): Promise<Setting> {
+    return this.settingRepository.create({
+      ...setting,
+    });
+  }
+
+  async update(setting: Setting) {
+    return this.settingRepository.update(
+      { ...setting },
+      {
+        where: {
+          name: setting.name,
+        },
+      },
+    );
+  }
+
+  async delete(id: number) {
+    return this.settingRepository.destroy({
+      where: {
+        id: id,
+      },
+    });
   }
 
   async findByName(name: string): Promise<Setting> {

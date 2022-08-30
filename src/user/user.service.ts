@@ -14,7 +14,9 @@ export class UserService {
 
   //   Create a new user
   async create(account: Account): Promise<Account> {
-    return this.accountRepository.create({ account: account });
+    return this.accountRepository.create({
+      ...account,
+    });
   }
 
   //   Find a user by name
