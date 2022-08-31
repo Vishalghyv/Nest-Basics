@@ -19,12 +19,12 @@ export class SettingService {
     });
   }
 
-  async update(setting: Setting) {
+  async update(id: number, value: string) {
     return this.settingRepository.update(
-      { ...setting },
+      { value: value },
       {
         where: {
-          name: setting.name,
+          id: id,
         },
       },
     );
@@ -40,5 +40,9 @@ export class SettingService {
 
   async findByName(name: string): Promise<Setting> {
     return this.settingRepository.findOne<Setting>({ where: { name } });
+  }
+
+  async findById(id: number): Promise<Setting> {
+    return this.settingRepository.findOne<Setting>({ where: { id } });
   }
 }

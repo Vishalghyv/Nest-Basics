@@ -6,8 +6,11 @@ import {
   Headers,
   Put,
   Delete,
+  UseGuards,
+  HttpException,
+  Param,
 } from '@nestjs/common';
-import { Account } from '../entity/account.entity';
+import { AuthGuard } from '../auth.guard';
 import { Setting } from '../entity/setting.entity';
 import { UserService } from '../user/user.service';
 import { SettingService } from './setting.service';
@@ -20,71 +23,41 @@ export class SettingController {
   ) {}
 
   @Post('create')
-  async create(
-    @Body() setting: Setting,
-    @Headers('authorization') token: string,
-  ): Promise<Setting> {
-    //  Get authorization token from header
-    if (token !== 'BearerTest') {
-      throw new Error('Unauthorized');
+  @UseGuards(AuthGuard)
+  async create(@Body() setting: Setting): Promise<Setting> {
+    // Move data_type to setting
+    const user = await this.userService.findById(setting.account_id);
+
+    if (user === null) {
+      throw new HttpException('User not found', 404);
     }
 
-    if (!setting.name) {
-      throw new Error('Name is required');
-    }
-
-    if (!this.userService.findByName(setting.name)) {
-      throw new Error("User with the given name doesn't exists");
-    }
-
-    const user = await this.userService.findByName(setting.name);
-
-    if (typeof user.data_type !== typeof setting.value) {
-      throw new Error('Data type is not correct');
+    if (setting.data_type !== typeof setting.value) {
+      throw new HttpException('Data type not match', 404);
     }
 
     return this.settingService.create(setting);
   }
 
-  @Put('update')
-  async update(
-    @Body() setting: Setting,
-    @Headers('authorization') token: string,
-  ): Promise<any> {
-    //  Get authorization token from header
-    if (token !== 'BearerTest') {
-      throw new Error('Unauthorized');
-    }
+  @Put('update/:id')
+  @UseGuards(AuthGuard)
+  async update(@Param('id') id: number, @Body() value: string): Promise<any> {
+    const userSetting = await this.settingService.findById(id);
 
-    if (!setting.name) {
-      throw new Error('Name is required');
+    if (userSetting === null) {
+      throw new HttpException('Setting not found', 404);
     }
-
-    // Todo: Compare user id from account id and name are from same user
-    if (!this.userService.findByName(setting.name)) {
-      throw new Error("Name doesn't exists");
-    }
-    return this.settingService.update(setting);
+    return this.settingService.update(id, value);
   }
 
-  @Delete('delete')
-  async delete(
-    @Body() setting: Setting,
-    @Headers('authorization') token: string,
-  ): Promise<any> {
-    //  Get authorization token from header
-    if (token !== 'BearerTest') {
-      throw new Error('Unauthorized');
-    }
+  @Delete('delete/:id')
+  @UseGuards(AuthGuard)
+  async delete(@Param('id') id: number): Promise<any> {
+    const userSetting = await this.settingService.findById(id);
 
-    if (!setting.name) {
-      throw new Error('Name is required');
+    if (userSetting === null) {
+      throw new HttpException('Setting not found', 404);
     }
-
-    if (!this.settingService.findByName(setting.name)) {
-      throw new Error("Setting doesn't exists");
-    }
-
-    return this.settingService.delete(setting.id);
+    return this.settingService.delete(id);
   }
 }

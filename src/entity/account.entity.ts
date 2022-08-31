@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsString } from 'class-validator';
 import { Table, Column, Model } from 'sequelize-typescript';
 
 @Table
@@ -7,9 +8,9 @@ export class Account extends Model {
   // - data_type: string
   // - createdAt, updatedAt, deletedAt - DateTime format
   @Column
+  @IsString()
+  @IsNotEmpty()
   name: string;
-  @Column
-  data_type: string;
   @Column
   createdAt: Date;
   @Column
