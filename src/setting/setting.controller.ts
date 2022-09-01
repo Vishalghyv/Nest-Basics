@@ -13,6 +13,7 @@ import {
 import { AuthGuard } from '../auth.guard';
 import { Setting } from '../entity/setting.entity';
 import { UserService } from '../user/user.service';
+import { SettingDTO } from './setting.dto';
 import { SettingService } from './setting.service';
 
 @Controller('setting')
@@ -24,10 +25,11 @@ export class SettingController {
 
   @Post('create')
   @UseGuards(AuthGuard)
-  async create(@Body() setting: Setting): Promise<Setting> {
+  async create(@Body() setting: SettingDTO): Promise<Setting> {
     // Move data_type to setting
     const user = await this.userService.findById(setting.account_id);
 
+    //  DTO
     if (user === null) {
       throw new HttpException('User not found', 404);
     }
@@ -50,7 +52,7 @@ export class SettingController {
     return this.settingService.update(id, value);
   }
 
-  @Delete('delete/:id')
+  @Delete(':id')
   @UseGuards(AuthGuard)
   async delete(@Param('id') id: number): Promise<any> {
     const userSetting = await this.settingService.findById(id);

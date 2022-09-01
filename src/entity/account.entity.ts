@@ -1,7 +1,9 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 import { Table, Column, Model } from 'sequelize-typescript';
 
-@Table
+@Table({
+  paranoid: true,
+})
 export class Account extends Model {
   // - id: int, primary key, auto increment
   // - name: string

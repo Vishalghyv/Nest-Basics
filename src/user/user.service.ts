@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Account } from '../entity/account.entity';
+import { UserDTO } from './user.dto';
 
 @Injectable()
 export class UserService {
@@ -13,7 +14,7 @@ export class UserService {
   }
 
   //   Create a new user
-  async create(account: Account): Promise<Account> {
+  async create(account: UserDTO): Promise<Account> {
     return this.accountRepository.create({
       ...account,
     });

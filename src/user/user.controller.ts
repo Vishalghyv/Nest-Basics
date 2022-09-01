@@ -1,12 +1,13 @@
 import { Controller, Post, Body, Req, HttpException } from '@nestjs/common';
 import { Account } from '../entity/account.entity';
+import { UserDTO } from './user.dto';
 import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('create')
-  async create(@Body() account: Account): Promise<Account> {
+  async create(@Body() account: UserDTO): Promise<Account> {
     const user = await this.userService.findByName(account.name);
 
     if (user !== null) {
