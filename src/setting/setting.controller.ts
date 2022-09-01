@@ -43,13 +43,13 @@ export class SettingController {
 
   @Put('update/:id')
   @UseGuards(AuthGuard)
-  async update(@Param('id') id: number, @Body() value: string): Promise<any> {
+  async update(@Param('id') id: number, @Body() value: any): Promise<any> {
     const userSetting = await this.settingService.findById(id);
 
     if (userSetting === null) {
       throw new HttpException('Setting not found', 404);
     }
-    return this.settingService.update(id, value);
+    return this.settingService.update(id, value.value);
   }
 
   @Delete(':id')
